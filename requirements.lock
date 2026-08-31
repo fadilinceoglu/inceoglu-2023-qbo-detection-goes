@@ -1,0 +1,15 @@
+# Pinned direct reproduction and test packages for the Python 3.10 environment.
+# Pip resolves their transitive dependencies for the target platform.
+# Install with: python3.10 -m pip install -r requirements.lock
+matplotlib==3.8.1
+netCDF4==1.6.5
+numpy==1.25.2
+pandas==2.0.3
+pycwt==0.4.0b0
+pytest==8.3.3
+requests==2.31.0
+scipy==1.11.3
+sgp4==2.22
+spacepy==0.4.1
+spacetrack==1.1.0
+tomli==2.0.1

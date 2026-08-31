@@ -2,6 +2,8 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
+build/
+dist/
 .pytest_cache/
 .coverage
 htmlcov/
@@ -28,14 +30,10 @@ data/source/*
 !data/source/sunspots/
 !data/source/sunspots/SN_m_tot_V2.0.txt
 !data/source/sunspots/SHA256SUMS
-data/raw/
-data/intermediate/
 data/processed/*
 !data/processed/quarterly/
 !data/processed/quarterly/*.csv
 !data/processed/quarterly/SHA256SUMS
-data/tle/
-data/cache/
 *.nc
 *.cdf
 *.pkl
@@ -44,9 +42,6 @@ data/cache/
 
 # Generated outputs; published figures are deliberately tracked
 outputs/work/
-outputs/tables/
-outputs/manifest.json
-outputs/figures/generated/
 
 # Temporary files and logs
 *.log

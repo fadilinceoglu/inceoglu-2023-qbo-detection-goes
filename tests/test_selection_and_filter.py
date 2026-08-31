@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 from scipy.signal import butter, filtfilt
 
-import analyze
+from qbo_detection import analysis as analyze
 
 
 def test_longest_interval_breaks_at_nan_and_resolves_ties_earliest() -> None:

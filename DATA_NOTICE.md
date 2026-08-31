@@ -27,7 +27,7 @@ products in work that uses these observations.
 
 ## Coordinate transformation implementation
 
-The focused EPN-to-ECI equations in `scripts/coordinates.py` follow the GOES-R
+The focused EPN-to-ECI equations in `src/qbo_detection/coordinates.py` follow the GOES-R
 Magnetometer Alternate Coordinate Systems algorithm used by the original
 calculation, with the SWPC `magcor` and Loto'aniu `goesMag` implementation
 heritage identified in the source documentation. This repository contains a

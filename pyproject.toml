@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools==75.8.0", "wheel==0.45.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "inceoglu-2023-qbo-detection-goes"
+version = "1.0.0"
+description = "Reproduction of the GOES magnetic-field QBO analysis in Inceoglu and Loto’aniu (2023)"
+readme = "README.md"
+requires-python = ">=3.10,<3.11"
+license = {file = "LICENSE"}
+authors = [
+  {name = "Fadil Inceoglu"},
+  {name = "Paul T. M. Loto’aniu"},
+]
+dependencies = [
+  "matplotlib==3.8.1",
+  "numpy==1.25.2",
+  "pandas==2.0.3",
+  "pycwt==0.4.0b0",
+  "scipy==1.11.3",
+  "tomli==2.0.1; python_version < '3.11'",
+]
+
+[project.optional-dependencies]
+full = [
+  "netCDF4==1.6.5",
+  "requests==2.31.0",
+  "sgp4==2.22",
+  "spacepy==0.4.1",
+  "spacetrack==1.1.0",
+]
+test = ["pytest==8.3.3"]
+
+[project.urls]
+Article = "https://doi.org/10.1038/s41598-023-46902-6"
+Repository = "https://github.com/fadilinceoglu/inceoglu-2023-qbo-detection-goes"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+pythonpath = ["src"]

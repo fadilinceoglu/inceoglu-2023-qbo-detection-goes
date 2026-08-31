@@ -1,9 +1,7 @@
-#!/usr/bin/env python3
 """Select the paper intervals, filter them, and calculate wavelet products.
 
-The module is both a command-line program and the analysis API used by
-``scripts/reproduce.py``.  The published calculation uses PyCWT's local and
-global AR(1) significance tests.
+The module contains the analysis API used by the package pipeline. The
+published calculation uses PyCWT's local and global AR(1) significance tests.
 """
 
 from __future__ import annotations
@@ -21,14 +19,13 @@ import numpy as np
 import pandas as pd
 from scipy.signal import butter, filtfilt
 
+from .config import DEFAULT_CONFIG, REPOSITORY_ROOT
+
 try:  # Python 3.11+
     import tomllib
 except ModuleNotFoundError:  # pragma: no cover - exercised on Python 3.10
     import tomli as tomllib
 
-
-REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_CONFIG = REPOSITORY_ROOT / "data" / "config" / "paper.toml"
 
 ALL_MISSIONS = (1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
 PAPER_MISSIONS = (6, 7, 8, 10, 12, 13, 15, 17)
@@ -811,7 +808,8 @@ def run_wavelet_analysis(
     missing = [str(path) for path in selected_paths.values() if not path.exists()]
     if missing:
         raise FileNotFoundError(
-            "Selected checkpoints are missing. Run analyze.py select-filter first:\n  "
+            "Selected checkpoints are missing. Run "
+            "`python scripts/reproduce.py analyze` first:\n  "
             + "\n  ".join(missing)
         )
     selected = {

@@ -1,27 +1,32 @@
 cff-version: 1.2.0
-message: "If you use this repository, please cite the paper and the software."
-title: "Detection of solar QBO-like signals in earth’s magnetic field from multi-GOES mission data"
+message: "If you use this reproduction software, cite the associated article."
+title: "Reproduction code for the 2023 GOES magnetic-field QBO study"
 type: software
+version: 1.0.0
 authors:
   - family-names: Inceoglu
     given-names: Fadil
-  - family-names: Loto’aniu
+  - family-names: "Loto’aniu"
     given-names: Paul T. M.
 repository-code: "https://github.com/fadilinceoglu/inceoglu-2023-qbo-detection-goes"
 license: MIT
+keywords:
+  - quasi-biennial oscillation
+  - GOES
+  - geomagnetic field
+  - wavelet analysis
 preferred-citation:
   type: article
   title: "Detection of solar QBO-like signals in earth’s magnetic field from multi-GOES mission data"
   authors:
     - family-names: Inceoglu
       given-names: Fadil
-    - family-names: Loto’aniu
+    - family-names: "Loto’aniu"
       given-names: Paul T. M.
   journal: Scientific Reports
   volume: "13"
   start: "19460"
   year: 2023
-  month: 11
-  day: 9
+  date-published: 2023-11-09
   doi: 10.1038/s41598-023-46902-6
   url: "https://doi.org/10.1038/s41598-023-46902-6"

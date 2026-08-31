@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-import analyze
+from qbo_detection import analysis as analyze
 from conftest import REPOSITORY_ROOT
 
 

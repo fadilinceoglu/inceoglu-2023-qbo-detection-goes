@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Coordinate operations needed by the legacy GOES magnetometer pipeline.
 
 The EPN-to-ECI rotation follows the GOES-R Magnetometer Alternate Coordinate

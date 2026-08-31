@@ -1,157 +1,147 @@
 # Detection of solar QBO-like signals in earth’s magnetic field from multi-GOES mission data
 
-This repository contains the calculation and figures for:
+This repository contains the calculation and six paper figures for:
 
 > Inceoglu, F. & Loto’aniu, P. T. M. (2023). Detection of solar QBO-like
 > signals in earth’s magnetic field from multi-GOES mission data.
 > *Scientific Reports*, 13, 19460.
 > <https://doi.org/10.1038/s41598-023-46902-6>
 
-The tracked outputs are the six figures in the paper. The scripts can reproduce
-individual figures, resume from existing calculation checkpoints, or perform the
-complete acquisition and analysis chain.
+The code acquires and prepares multi-mission GOES magnetometer observations,
+selects the continuous records used by the study, applies the 1.1–4.5-year
+bandpass, calculates continuous and global wavelet spectra, and regenerates the
+paper figures.
 
-Compact three-month GOES inputs and the monthly sunspot series are included. A
-fresh clone can therefore run the wavelet analysis and regenerate Figures 2–6
-without first downloading the complete minute-resolution GOES archive.
+## Results in scope
 
-## Calculation
+- `outputs/figures/Fig_01.jpg`: minute-resolution GOES magnetic-field series.
+- `outputs/figures/Fig_02.jpg`: three-month means and bandpass-filtered series.
+- `outputs/figures/Fig_03.jpg`–`Fig_05.jpg`: component continuous and global
+  wavelet spectra.
+- `outputs/figures/Fig_06.jpg`: sunspot-number continuous and global wavelet
+  spectra.
 
-The analysis:
+Compact three-month GOES inputs and the exact monthly sunspot series consumed by
+the analysis are included. They are the practical starting point for the normal
+reproduction and avoid resource-intensive processing of the complete
+minute-resolution archive.
 
-1. reads GOES magnetometer observations from NOAA NCEI;
-2. converts measurements supplied in EPN coordinates to GSM coordinates using
-   contemporaneous two-line element sets;
-3. forms one-minute values, applies the study's sequential four-standard-deviation
-   outlier rule, and calculates three-month means and standard deviations;
-4. treats a three-month bin as full when its B_GSMz component contains at least
-   98,550 one-minute values (the 75% threshold used by the calculation), selects
-   each mission's longest continuous interval, and requires at least 4.5 years of
-   data;
-5. applies a fifth-order, zero-phase Butterworth bandpass for periods from 1.1 to
-   4.5 years; and
-6. calculates standardized Morlet continuous and global wavelet spectra with
-   analytical 95% significance thresholds under a first-order autoregressive
-   (AR(1)) red-noise null using PyCWT's significance calculation.
+## Environment
 
-The eight missions satisfying the selection criteria are GOES-06, GOES-07,
-GOES-08, GOES-10, GOES-12, GOES-13, GOES-15, and GOES-17. The complete numerical
-configuration is in [`data/config/paper.toml`](data/config/paper.toml).
-
-## Installation
-
-Python 3.9 is recommended.
+The supported reproduction environment is Python 3.10. Install the pinned
+dependencies and the repository package with:
 
 ```bash
-git clone https://github.com/fadilinceoglu/inceoglu-2023-qbo-detection-goes.git
-cd inceoglu-2023-qbo-detection-goes
-python3.9 -m venv .venv
+python3.10 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+python -m pip install -r requirements.lock
+python -m pip install -e . --no-deps
 ```
 
-The lightweight installation above is sufficient for the normal reproduction
-from the included three-month inputs. For `--full`, install the additional raw
-acquisition and coordinate-conversion dependencies instead:
+For the normal checkpoint-to-figure path, the smaller core installation is
+sufficient:
 
 ```bash
-python -m pip install -r requirements-full.txt
+python -m pip install -e .
 ```
 
-The complete acquisition stage also needs a
-[Space-Track](https://www.space-track.org/) account. Supply its credentials only
-through environment variables:
+The raw-data path additionally requires `python -m pip install -e ".[full]"`.
 
-```bash
-export SPACETRACK_IDENTITY="your-account-email"
-export SPACETRACK_PASSWORD="your-password"
-```
+## Reproduce
 
-Do not place credentials in source files or configuration committed to Git.
-
-## Reproduction commands
-
-Run or resume the complete calculation from the deepest available checkpoint:
+From a fresh clone, run:
 
 ```bash
 python scripts/reproduce.py
 ```
 
-On a fresh clone, this command uses the released three-month inputs to run the
-analysis and regenerate Figures 2–6. It does not begin the data-intensive GOES
-acquisition implicitly. Figure 1 is retained at its tracked published version
-on this path.
+This verifies the released inputs, runs the selection, filtering, and wavelet
+analysis, and regenerates Figures 2–6. Figure 1 remains at its tracked published
+version because it requires the complete prepared one-minute archive.
 
-Authorize the complete chain, including authoritative downloads and regeneration
-of Figure 1, with:
+Explicitly authorize the complete source-data chain with:
 
 ```bash
-python scripts/reproduce.py --full
+python scripts/reproduce.py all --full
 ```
 
-Run one stage at a time:
+This downloads the GOES observations and orbital elements, prepares the
+one-minute and three-month series, runs the analysis, and regenerates all six
+figures. The acquisition and preparation stages over the complete paper interval
+are data- and compute-intensive and should run in a persistent environment.
+
+Every stage and figure can also be run separately:
 
 ```bash
-python scripts/reproduce.py --stage acquire
-python scripts/reproduce.py --stage prepare --full
-python scripts/reproduce.py --stage analyze
-python scripts/reproduce.py --stage figures --full
+python scripts/reproduce.py acquire
+python scripts/reproduce.py prepare
+python scripts/reproduce.py analyze
+python scripts/reproduce.py figures
+python scripts/reproduce.py figure 4
+python scripts/reproduce.py status
 ```
 
-Omit `--full` from the preparation and figure stages when working only from the
-released three-month checkpoints and regenerating Figures 2–6.
-
-Generate one paper figure:
+For a short acquisition-path check, bound the request to a few days and one
+mission:
 
 ```bash
-python scripts/reproduce.py --stage figures --figure 4
-```
-
-The default calculation or the `analyze` stage must complete before a wavelet
-figure is generated separately. Figure 1 instead requires the prepared
-one-minute mission files.
-
-For a short acquisition-path check, use a two- or three-day interval:
-
-```bash
-python scripts/reproduce.py --stage acquire --missions 16 \
+python scripts/reproduce.py acquire --missions 16 \
   --start 2023-07-01 --end 2023-07-03
 ```
 
-Add `--force` to recompute the requested outputs instead of reusing an existing
-analysis checkpoint. The lightweight path never enters minute preparation;
-forcing raw-data preparation requires both `--full` and `--force`. The released
-sunspot file is preserved by a full run, including a forced run; refresh that
-provider file only with `python scripts/acquire_data.py sunspots --force`.
+The individual stage wrappers call the same package implementation. Detailed
+commands, stage contracts, options, and credential handling are in
+[`docs/REPRODUCTION.md`](docs/REPRODUCTION.md).
 
-## Stages and outputs
+## Calculation conventions
 
-| Stage | Result |
-| --- | --- |
-| `acquire` | NCEI GOES source files and Space-Track orbital elements |
-| `prepare` | one-minute GSM series and three-month statistics |
-| `analyze` | selected continuous spans, bandpass-filtered series, continuous and global wavelet spectra, and AR(1) significance thresholds |
-| `figures` | Figures 2–6 by default; Figure 1 as well with `--full` or `--figure 1` |
+The calculation uses:
 
-Running the figure stage writes to the same six paths as the tracked published
-figures. See [`data/README.md`](data/README.md) for input roles and
-[`outputs/README.md`](outputs/README.md) for the figure mapping.
+- one-minute GSM magnetic-field components obtained directly or by converting
+  legacy EPN measurements with contemporaneous orbital elements;
+- the study’s sequential four-standard-deviation outlier rule;
+- three-month bins accepted at the fixed 98,550-sample threshold;
+- each component’s longest continuous interval, with a minimum duration of
+  4.5 years;
+- a fifth-order zero-phase Butterworth bandpass corresponding approximately to
+  periods from 1.1 to 4.5 years; and
+- standardized Morlet continuous wavelets with analytical 95% significance
+  thresholds under an AR(1) red-noise null, calculated with PyCWT.
 
-## Data and terms
+The selected missions are GOES-06, GOES-07, GOES-08, GOES-10, GOES-12,
+GOES-13, GOES-15, and GOES-17. Exact parameters are recorded in
+[`data/config/paper.toml`](data/config/paper.toml), and the input-to-output path
+is described in [`docs/DATA_PROVENANCE.md`](docs/DATA_PROVENANCE.md).
 
-The complete minute-resolution GOES archive and Space-Track orbital elements are
-not tracked in Git. The repository does include the compact three-month GOES CSV
-files and the exact WDC-SILSO monthly series consumed by the normal reproduction
-command. Source links, citations, and terms are recorded in
-[`DATA_NOTICE.md`](DATA_NOTICE.md).
+## Repository contents
 
-Repository software is released under the [MIT License](LICENSE). The published
-figures and third-party data have separate terms described in
-[`DATA_NOTICE.md`](DATA_NOTICE.md).
+```text
+src/qbo_detection/       calculation, plotting, and orchestration code
+scripts/                 thin complete-chain, stage, and figure entry points
+data/config/             paper calculation parameters
+data/source/             released SILSO input; downloaded GOES data are ignored
+data/processed/          released three-month GOES inputs; runtime data are ignored
+outputs/figures/         six tracked paper figures
+docs/                    reproduction and data-provenance details
+tests/                   focused scientific and execution checks
+```
 
-## Citation
+Run the checks with:
 
-Please cite both the paper and this repository. Citation metadata for the
-repository and the preferred paper citation are provided in
+```bash
+python -m pip install -e ".[test]"
+python -m pytest
+```
+
+The tests use compact fixtures and do not run the full acquisition or
+minute-resolution preparation.
+
+## Citation and terms
+
+Please cite the paper and this repository. Machine-readable metadata are in
 [`CITATION.cff`](CITATION.cff).
+
+Repository software is released under the [MIT License](LICENSE). The released
+GOES and SILSO inputs and the published figures have separate source and reuse
+terms described in [`DATA_NOTICE.md`](DATA_NOTICE.md).

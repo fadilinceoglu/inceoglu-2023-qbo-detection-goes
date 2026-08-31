@@ -1,8 +1,0 @@
--r requirements.txt
-
-# Additional dependencies for raw acquisition and EPN-to-GSM preparation.
-netCDF4==1.6.5
-requests==2.31.0
-sgp4==2.22
-spacepy==0.4.1
-spacetrack==1.1.0

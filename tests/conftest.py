@@ -8,8 +8,8 @@ from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = REPOSITORY_ROOT / "scripts"
+SOURCE_DIR = REPOSITORY_ROOT / "src"
 
-# The public scripts are deliberately usable both as command-line programs and
-# as small importable analysis modules.  Import them exactly as direct script
-# execution does, without requiring a package installation.
-sys.path.insert(0, str(SCRIPTS_DIR))
+# Exercise the installable package directly without requiring an editable
+# installation in the source checkout.
+sys.path.insert(0, str(SOURCE_DIR))

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import acquire_data
-import prepare_data
+from qbo_detection import acquisition as acquire_data
+from qbo_detection import preparation as prepare_data
 
 
 def test_acquisition_selects_numerically_highest_netcdf_revision() -> None:

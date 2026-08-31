@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Generate the six paper figures from portable analysis checkpoints."""
 
 from __future__ import annotations
@@ -21,42 +20,23 @@ from matplotlib import gridspec
 from matplotlib.lines import Line2D
 from scipy.signal import find_peaks
 
-try:
-    from analyze import (
-        ALL_MISSIONS,
-        COMPONENTS,
-        COMPONENT_LABELS,
-        DEFAULT_CONFIG,
-        PAPER_MISSIONS,
-        SIGNIFICANCE_METHOD,
-        AnalysisSettings,
-        _array_digest,
-        _selected_component,
-        _wavelet_provenance,
-        difference_of_lowpasses,
-        find_sunspot_file,
-        load_settings,
-        load_sunspot_monthly,
-        quarterly_sunspots,
-    )
-except ModuleNotFoundError:  # imported as scripts.make_figures
-    from scripts.analyze import (
-        ALL_MISSIONS,
-        COMPONENTS,
-        COMPONENT_LABELS,
-        DEFAULT_CONFIG,
-        PAPER_MISSIONS,
-        SIGNIFICANCE_METHOD,
-        AnalysisSettings,
-        _array_digest,
-        _selected_component,
-        _wavelet_provenance,
-        difference_of_lowpasses,
-        find_sunspot_file,
-        load_settings,
-        load_sunspot_monthly,
-        quarterly_sunspots,
-    )
+from .analysis import (
+    ALL_MISSIONS,
+    COMPONENTS,
+    COMPONENT_LABELS,
+    DEFAULT_CONFIG,
+    PAPER_MISSIONS,
+    SIGNIFICANCE_METHOD,
+    AnalysisSettings,
+    _array_digest,
+    _selected_component,
+    _wavelet_provenance,
+    difference_of_lowpasses,
+    find_sunspot_file,
+    load_settings,
+    load_sunspot_monthly,
+    quarterly_sunspots,
+)
 
 
 MISSION_COLORS = {
@@ -257,8 +237,8 @@ def _load_selected(settings: AnalysisSettings, processed_dir: Path | None = None
     }
     _missing_inputs(
         paths,
-        "Figures 2–6 need selected mission checkpoints. Run `python scripts/analyze.py "
-        "select-filter` first; missing files:",
+        "Figures 2–6 need selected mission checkpoints. Run "
+        "`python scripts/reproduce.py analyze` first; missing files:",
     )
     required = [
         *(f"chosen_{component}" for component in COMPONENTS),
@@ -374,8 +354,7 @@ def _analysis_rerun_command(
 ) -> str:
     arguments = [
         "python",
-        "scripts/analyze.py",
-        "wavelets",
+        "scripts/analyze_qbo_signals.py",
         "--config",
         str(Path(config_path).expanduser()),
     ]
@@ -686,7 +665,7 @@ def make_figure_6(
     quarterly_path = processed / "selected" / "sunspots_quarterly.csv"
     if not quarterly_path.exists():
         raise FileNotFoundError(
-            f"{quarterly_path} is missing. Run `python scripts/analyze.py wavelets`."
+            f"{quarterly_path} is missing. Run `python scripts/reproduce.py analyze`."
         )
     quarterly = _read_timeseries(quarterly_path, ("ssn_mean", "ssn_bp"))
     if "decyear" not in quarterly:

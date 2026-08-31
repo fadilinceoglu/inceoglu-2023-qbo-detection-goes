@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-import acquire_data
-import prepare_data
+from qbo_detection import acquisition as acquire_data
+from qbo_detection import preparation as prepare_data
 
 
 class _NoNetworkSession:
@@ -121,7 +121,7 @@ def test_missing_released_quarterly_fails_without_preparation(
     message = str(error.value)
     assert "goes06_quarterly.csv" in message
     assert "git restore -- data/processed/quarterly" in message
-    assert "python scripts/reproduce.py --full" in message
+    assert "python scripts/reproduce.py all --full" in message
 
 
 def test_changed_quarterly_cache_reports_git_restoration(tmp_path: Path) -> None:

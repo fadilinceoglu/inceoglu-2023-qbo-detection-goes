@@ -6,7 +6,7 @@ import sys
 
 import numpy as np
 
-from coordinates import epn_to_eci
+from qbo_detection.coordinates import epn_to_eci
 
 
 def _orbital_positions(

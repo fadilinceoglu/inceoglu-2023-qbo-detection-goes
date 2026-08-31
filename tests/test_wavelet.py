@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-import analyze
+from qbo_detection import analysis as analyze
 
 
 def test_paper_config_uses_the_single_pycwt_ar1_method() -> None:

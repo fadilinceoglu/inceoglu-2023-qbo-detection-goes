@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Prepare canonical GOES minute series and three-month checkpoints.
 
 The script provides two resumable preparation operations:
@@ -36,19 +35,14 @@ from collections.abc import Iterable, Iterator, Sequence
 import numpy as np
 import pandas as pd
 
-try:  # Executed as ``python scripts/prepare_data.py``.
-    from coordinates import eci_to_gsm, epn_to_eci, propagate_tle
-    from file_integrity import manifest_checksum as _manifest_checksum
-    from file_integrity import sha256_file as _sha256
-except ImportError:  # Imported as ``scripts.prepare_data``.
-    from scripts.coordinates import eci_to_gsm, epn_to_eci, propagate_tle
-    from scripts.file_integrity import manifest_checksum as _manifest_checksum
-    from scripts.file_integrity import sha256_file as _sha256
+from .config import DEFAULT_CONFIG, REPOSITORY_ROOT, resolve_repository_path
+from .coordinates import eci_to_gsm, epn_to_eci, propagate_tle
+from .io import manifest_checksum as _manifest_checksum
+from .io import sha256_file as _sha256
 
 
 CANONICAL_COLUMNS = ["time", "b_g", "b_s", "b_m"]
 FIELD_COLUMNS = ["b_g", "b_s", "b_m"]
-REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 RELEASED_QUARTERLY_DIR = REPOSITORY_ROOT / "data" / "processed" / "quarterly"
 
 # This is the exact source choice in the paper calculation.  For the five
@@ -465,7 +459,7 @@ def extract_legacy(
         tle_path = source_root / "tle" / f"goes{mission:02d}.tle"
         if not tle_path.exists():
             raise FileNotFoundError(
-                f"missing {tle_path}; run scripts/acquire_data.py tle first"
+                f"missing {tle_path}; run `python scripts/reproduce.py acquire` first"
             )
         tles = read_tles(tle_path)
         for index, raw in enumerate(raw_files, 1):
@@ -884,7 +878,7 @@ def verify_released_quarterly(
             "but these files are missing or empty:\n  "
             f"{formatted}\n"
             "Restore the tracked inputs with `git restore -- data/processed/quarterly`, "
-            "or run `python scripts/reproduce.py --full` to rebuild them from the "
+            "or run `python scripts/reproduce.py all --full` to rebuild them from the "
             "source-data path."
         )
     for target in targets:
@@ -904,7 +898,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--config",
         type=Path,
-        default=Path("data/config/paper.toml"),
+        default=DEFAULT_CONFIG,
         help="TOML calculation configuration",
     )
     parser.add_argument("--source-dir", type=Path, help="override [paths].source")
@@ -932,11 +926,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.released_only and args.force:
         parser.error("--released-only cannot be combined with --force")
     config = _load_toml(args.config)
-    source_root = args.source_dir or Path(
-        _nested(config, "paths", "source", default="data/source")
+    source_root = resolve_repository_path(
+        args.source_dir
+        or _nested(config, "paths", "source", default="data/source")
     )
-    processed_root = args.processed_dir or Path(
-        _nested(config, "paths", "processed", default="data/processed")
+    processed_root = resolve_repository_path(
+        args.processed_dir
+        or _nested(config, "paths", "processed", default="data/processed")
     )
     if args.missions:
         missions = _parse_missions(args.missions)

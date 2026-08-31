@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Acquire the authoritative GOES inputs and cache Space-Track TLEs.
 
 Downloads are bounded by explicit UTC dates and mission lists from
@@ -25,12 +24,9 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urljoin, urlsplit
 
-try:  # Executed as ``python scripts/acquire_data.py``.
-    from file_integrity import manifest_checksum as _manifest_checksum
-    from file_integrity import sha256_file as _sha256
-except ImportError:  # Imported as ``scripts.acquire_data``.
-    from scripts.file_integrity import manifest_checksum as _manifest_checksum
-    from scripts.file_integrity import sha256_file as _sha256
+from .config import DEFAULT_CONFIG, resolve_repository_path
+from .io import manifest_checksum as _manifest_checksum
+from .io import sha256_file as _sha256
 
 
 LEGACY_BASE_URL = (
@@ -230,6 +226,19 @@ def _verify_released_sunspot_input(target: Path) -> None:
             f"Expected {expected}, found {actual}. Restore the released input with "
             f"`{restore}`, then rerun the command."
         )
+
+
+def verify_released_sunspot(source_root: Path) -> Path:
+    """Verify and return the exact tracked SILSO input used by analysis."""
+
+    target = Path(source_root) / "sunspots" / "SN_m_tot_V2.0.txt"
+    if not target.is_file():
+        raise FileNotFoundError(
+            f"Released SILSO input is missing: {target}. Restore it with "
+            "`git restore -- data/source/sunspots`, then rerun the command."
+        )
+    _verify_released_sunspot_input(target)
+    return target
 
 
 def _download(
@@ -619,7 +628,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--config",
         type=Path,
-        default=Path("data/config/paper.toml"),
+        default=DEFAULT_CONFIG,
         help="TOML calculation configuration (default: data/config/paper.toml)",
     )
     parser.add_argument("--source-dir", type=Path, help="override [paths].source")
@@ -647,8 +656,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.error("--start and --end must be supplied together")
 
     config = _load_toml(args.config)
-    source_root = args.source_dir or Path(
-        _nested(config, "paths", "source", default="data/source")
+    source_root = resolve_repository_path(
+        args.source_dir
+        or _nested(config, "paths", "source", default="data/source")
     )
     requested = _parse_missions(args.missions) if args.missions else []
     legacy_missions = requested or _parse_missions(

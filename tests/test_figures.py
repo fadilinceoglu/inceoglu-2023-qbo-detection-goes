@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import make_figures
+from qbo_detection import figures as make_figures
 
 
 def _wavelet_arrays() -> dict[str, np.ndarray]:
@@ -140,5 +140,5 @@ def test_wavelet_loader_rejects_noncurrent_checkpoint(
     message = str(error.value)
     assert field in message
     assert (
-        f"python scripts/analyze.py wavelets --config {config} --force" in message
+        f"python scripts/analyze_qbo_signals.py --config {config} --force" in message
     )
