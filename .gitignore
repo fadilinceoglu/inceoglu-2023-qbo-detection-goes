@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environments and local configuration
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Downloaded and generated scientific data
+data/source/*
+!data/source/sunspots/
+!data/source/sunspots/SN_m_tot_V2.0.txt
+!data/source/sunspots/SHA256SUMS
+data/raw/
+data/intermediate/
+data/processed/*
+!data/processed/quarterly/
+!data/processed/quarterly/*.csv
+!data/processed/quarterly/SHA256SUMS
+data/tle/
+data/cache/
+*.nc
+*.cdf
+*.pkl
+*.pickle
+*.joblib
+
+# Generated outputs; published figures are deliberately tracked
+outputs/work/
+outputs/tables/
+outputs/manifest.json
+outputs/figures/generated/
+
+# Temporary files and logs
+*.log
+*.tmp
+*.part
+tmp/
+
+# Credentials and keys
+*.pem
+*.key
+credentials*
+secrets*

@@ -1,0 +1,52 @@
+[study]
+title = "Detection of solar QBO-like signals in earth’s magnetic field from multi-GOES mission data"
+doi = "10.1038/s41598-023-46902-6"
+
+[paths]
+source = "data/source"
+processed = "data/processed"
+figures = "outputs/figures"
+
+[acquisition]
+legacy_start = "1977-08-01"
+legacy_end = "2020-03-02"
+high_resolution_start = "1995-07-01"
+high_resolution_end = "2023-07-03"
+legacy_missions = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+high_resolution_missions = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+
+[coordinates]
+maximum_tle_distance_days = 15.0
+
+[preprocessing]
+outlier_standard_deviations = 4.0
+outlier_mode = "published-sequential"
+merge_policy = "published-stack"
+bin_months = 3
+# Descriptive paper criterion. In published-fixed mode the executable rule is
+# the exact 98,550-sample threshold below; changing this value is rejected.
+minimum_bin_coverage = 0.75
+coverage_mode = "published-fixed"
+minimum_samples_per_bin = 98550
+minimum_continuous_years = 4.5
+selected_goes_missions = [6, 7, 8, 10, 12, 13, 15, 17]
+
+[bandpass]
+order = 5
+# Exact calculation values; approximately 1.1 and 4.5 years at quarterly cadence.
+short_period_samples = 4.445
+long_period_samples = 18.1
+zero_phase = true
+
+[figures]
+# The paper figure uses every retained one-minute row. Values above 1 are
+# plotting-only preview reductions and do not reproduce the published sampling.
+minute_row_stride = 1
+
+[wavelet]
+mother = "morlet"
+morlet_frequency = 6.0
+scale_resolution = 0.015625
+scale_count = 640 # passed to PyCWT as J, yielding J + 1 scale levels
+smallest_scale_factor = 2.0
+confidence_level = 0.95

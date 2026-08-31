@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.jpg binary
+*.npz binary
+*.nc binary
+data/source/sunspots/SN_m_tot_V2.0.txt whitespace=-blank-at-eol
